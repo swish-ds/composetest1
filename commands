@@ -1,0 +1,47 @@
+Docker install
+--------------
+
+sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+yum erase podman buildah
+sudo yum install docker-ce docker-ce-cli containerd.io
+sudo systemctl enable --now docker && sudo systemctl status docker
+
+The Docker daemon binds to a Unix socket instead of a TCP port. By default that Unix socket is owned by the user root and other users can only access it using sudo. The Docker daemon always runs as the root user.
+
+
+Docker volume
+--------------
+
+docker build -t redis_1  -<<EOF
+FROM redis
+VOLUME /data
+EOF
+
+docker run --rm -d --name redis_1 redis_1
+docker run --rm --name redis_1 -d --mount type=volume,source=data,destination=/data redis_1
+docker stop $(docker ps -q)
+docker rm -f $(docker ps -a -q)
+
+docker volume ls
+docker volume rm $(docker volume ls -q)
+
+docker exec -it redis_1 bash
+docker exec -it composetest1_proxy_1 bash
+
+
+docker-compose
+--------------
+
+docker-compose build
+docker-compose up -d
+
+curl localhost:5000
+curl localhost
+curl flask-redis-app.test
+
+docker compose down
+
+
+docker stop $(docker ps -q); docker rm -f $(docker ps -a -q); docker volume rm $(docker volume ls -q); docker rmi -f $(docker images -q)
+
+docker stop $(docker ps -q); docker rm -f $(docker ps -a -q); docker volume rm $(docker volume ls -q);

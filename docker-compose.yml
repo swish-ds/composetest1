@@ -1,16 +1,17 @@
 version: "2.4"
 services:
   web:
-    build: .
+    build: ./web-container
     ports:
       - "5000:5000"
     volumes:
-      - .:/code
+      - ./web-container/files/:/code
     depends_on:
       redis:
         condition: service_healthy
     environment:
       FLASK_ENV: development
+
   redis:
     image: "redis:alpine"
     volumes:
@@ -28,5 +29,13 @@ services:
       timeout: 5s
       retries: 5
       start_period: 1s
+
+  proxy:
+    build: ./proxy-container
+    ports:
+      - "80:80"
+    depends_on:
+      - "web"
+
 volumes:
   mydata:
